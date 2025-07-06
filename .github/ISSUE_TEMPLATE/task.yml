@@ -1,0 +1,115 @@
+name: 📋 Task
+description: Create a development task or user story
+title: "[TASK] "
+labels: ["📋 task", "📋 needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Development Task
+        Use this template to create specific development tasks, user stories, or technical work items.
+
+  - type: input
+    id: task-title
+    attributes:
+      label: Task Summary
+      description: A brief, clear description of the task
+      placeholder: "Implement customer list component"
+    validations:
+      required: true
+
+  - type: textarea
+    id: task-description
+    attributes:
+      label: Description
+      description: Detailed description of what needs to be done
+      placeholder: "Create a Vue component that displays a list of customers with search and filtering capabilities"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component/Area
+      description: Which part of the app does this task relate to?
+      options:
+        - 🏗️ Backend
+        - 🎨 Frontend
+        - 📱 Mobile
+        - 🔧 DevOps
+        - 🗃️ Database
+        - 🔐 Authentication
+        - 🗺️ Maps
+        - 📚 Documentation
+        - 🧪 Testing
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this task?
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Estimated Effort
+      description: How much work is involved?
+      options:
+        - XS (< 1 hour)
+        - S (1-4 hours)
+        - M (4-8 hours)
+        - L (1-2 days)
+        - XL (2-5 days)
+        - XXL (> 5 days)
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Define what "done" looks like for this task
+      placeholder: |
+        - [ ] Component renders list of customers
+        - [ ] Search functionality works
+        - [ ] Mobile responsive design
+        - [ ] Unit tests written
+        - [ ] Integration tests pass
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-notes
+    attributes:
+      label: Technical Notes
+      description: Any technical considerations, dependencies, or implementation details
+      placeholder: "Use Vue 3 Composition API, integrate with Supabase customers table, implement debounced search"
+
+  - type: input
+    id: related-issues
+    attributes:
+      label: Related Issues
+      description: Reference related issues or dependencies
+      placeholder: "#123, #456"
+
+  - type: checkboxes
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      description: General checklist for task completion
+      options:
+        - label: Code is written and reviewed
+        - label: Tests are written and passing
+        - label: Documentation is updated
+        - label: Mobile compatibility verified
+        - label: Performance requirements met

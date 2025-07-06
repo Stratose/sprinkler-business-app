@@ -1,0 +1,107 @@
+name: 📚 Documentation
+description: Create or update documentation
+title: "[DOCS] "
+labels: ["📚 documentation", "📋 needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Documentation Task
+        Use this template to create or update documentation for the project.
+
+  - type: input
+    id: doc-title
+    attributes:
+      label: Documentation Summary
+      description: A brief description of the documentation task
+      placeholder: "Add API documentation for customer endpoints"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation is this?
+      options:
+        - API Documentation
+        - User Guide
+        - Developer Guide
+        - Architecture Documentation
+        - Deployment Guide
+        - Troubleshooting Guide
+        - README Update
+        - Code Comments
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: doc-description
+    attributes:
+      label: Description
+      description: Detailed description of what needs to be documented
+      placeholder: "Document all customer-related API endpoints including request/response schemas, authentication requirements, and error handling"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this documentation?
+      options:
+        - Low - Nice to have
+        - Medium - Important for maintainability
+        - High - Required for users/developers
+        - Critical - Blocking development or deployment
+    validations:
+      required: true
+
+  - type: textarea
+    id: target-audience
+    attributes:
+      label: Target Audience
+      description: Who is this documentation for?
+      placeholder: "Frontend developers, API consumers, end users, etc."
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Define what "done" looks like for this documentation
+      placeholder: |
+        - [ ] All API endpoints documented
+        - [ ] Request/response examples provided
+        - [ ] Error codes and messages documented
+        - [ ] Authentication requirements specified
+        - [ ] Code examples included
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Documentation Location
+      description: Where should this documentation be located?
+      placeholder: "docs/api.md, README.md, inline code comments, etc."
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any additional information or references
+      placeholder: "Links to existing documentation, examples from other projects, etc."
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please confirm the following
+      options:
+        - label: I have checked existing documentation to avoid duplicates
+          required: true
+        - label: This documentation will help users or developers
+          required: true

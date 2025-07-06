@@ -1,0 +1,117 @@
+name: 🐛 Bug Report
+description: Report a bug or issue with the application
+title: "[BUG] "
+labels: ["🐛 bug", "📋 needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report
+        Thank you for reporting a bug! Please provide detailed information to help us reproduce and fix the issue.
+
+  - type: input
+    id: bug-title
+    attributes:
+      label: Bug Summary
+      description: A brief, clear description of the bug
+      placeholder: "Customer search returns no results"
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Detailed Description
+      description: Provide a comprehensive description of the bug
+      placeholder: "Describe what happened, what you expected to happen, and any error messages"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: List the exact steps to reproduce the bug
+      placeholder: |
+        1. Go to customer list page
+        2. Type "John" in search box
+        3. Press Enter
+        4. See error message
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What should have happened instead?
+      placeholder: "Search should return customers with 'John' in their name"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: "No results returned, error message displayed"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is this bug?
+      options:
+        - Low - Minor issue, workaround available
+        - Medium - Affects functionality but not critical
+        - High - Major functionality broken
+        - Critical - App unusable, data loss, security issue
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component/Area
+      description: Which part of the app is affected?
+      options:
+        - Customer Management
+        - Maps & Location
+        - Appointments & Calendar
+        - Notes & Media
+        - Authentication
+        - Mobile App
+        - Database
+        - UI/UX
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Where did you encounter this bug?
+      placeholder: "Chrome 119, iOS 17, localhost:5173"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any additional information that might help
+      placeholder: "Screenshots, console errors, network logs, etc."
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      description: Please confirm the following
+      options:
+        - label: I have checked existing issues to avoid duplicates
+          required: true
+        - label: I have provided enough information to reproduce the bug
+          required: true

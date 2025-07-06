@@ -1,0 +1,89 @@
+name: ✨ Feature Request
+description: Request a new feature or enhancement
+title: "[FEATURE] "
+labels: ["✨ feature", "📋 needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+        Thank you for suggesting a new feature! Please provide detailed information to help us understand and implement your request.
+
+  - type: input
+    id: feature-title
+    attributes:
+      label: Feature Summary
+      description: A brief, clear description of the feature
+      placeholder: "Add customer search functionality"
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Detailed Description
+      description: Provide a comprehensive description of the feature
+      placeholder: "Describe what the feature should do, how it should work, and why it's needed"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component/Area
+      description: Which part of the app does this feature relate to?
+      options:
+        - Customer Management
+        - Maps & Location
+        - Appointments & Calendar
+        - Notes & Media
+        - Authentication
+        - Mobile App
+        - Database
+        - UI/UX
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature?
+      options:
+        - Low - Nice to have
+        - Medium - Would improve experience
+        - High - Important for core functionality
+        - Critical - Blocking other work
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Define what "done" looks like for this feature
+      placeholder: |
+        - [ ] User can search customers by name
+        - [ ] Search results are displayed in real-time
+        - [ ] Search works on mobile devices
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any additional information, mockups, or references
+      placeholder: "Screenshots, links to similar implementations, etc."
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      description: Please confirm the following
+      options:
+        - label: I have checked existing issues to avoid duplicates
+          required: true
+        - label: This feature aligns with the project's business requirements
+          required: true
