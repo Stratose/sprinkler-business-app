@@ -1,9 +1,6 @@
 -- Sprinkler Business App Database Schema
 -- Run this in Supabase SQL Editor after project creation
 
--- Enable RLS (Row Level Security)
-ALTER TABLE auth.users ENABLE ROW LEVEL SECURITY;
-
 -- Create customers table
 CREATE TABLE customers (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
