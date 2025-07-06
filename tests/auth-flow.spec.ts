@@ -109,4 +109,63 @@ test.describe("Authentication Flow", () => {
     // Take mobile screenshot
     await page.screenshot({ path: "login-mobile.png" });
   });
+
+  test("should show development authentication in dev mode", async ({ page }) => {
+    await page.goto("/login");
+
+    // Check that development authentication section is visible
+    const devSection = page.locator(".dev-auth-section");
+    await expect(devSection).toBeVisible();
+
+    // Check dev divider text
+    await expect(page.locator(".dev-divider span")).toContainText("Development Only");
+
+    // Check dev login button
+    const devLoginBtn = page.locator(".dev-signin-btn");
+    await expect(devLoginBtn).toBeVisible();
+    await expect(devLoginBtn).toContainText("Quick Dev Login");
+
+    // Check warning text
+    await expect(page.locator(".dev-warning")).toContainText(
+      "automatically disabled in production"
+    );
+
+    // Take screenshot of dev options
+    await page.screenshot({ path: "dev-auth-options.png" });
+  });
+
+  test("should authenticate with development login", async ({ page }) => {
+    await page.goto("/login");
+
+    // Click the development login button
+    const devLoginBtn = page.locator(".dev-signin-btn");
+    await devLoginBtn.click();
+
+    // Should redirect to dashboard
+    await expect(page).toHaveURL("/");
+
+    // Wait for authentication header to appear (this means auth is working)
+    await expect(page.locator(".app-header")).toBeVisible();
+
+    // Check that we're on the dashboard (look for dashboard content)
+    await expect(page.locator(".dashboard h1")).toContainText("Welcome back, Development User!");
+
+    // Check that DEV badge is visible in header
+    await expect(page.locator(".dev-badge")).toBeVisible();
+    await expect(page.locator(".dev-badge")).toContainText("DEV");
+
+    // Check user info shows development user
+    await expect(page.locator(".user-name")).toContainText("Development User");
+    await expect(page.locator(".user-email")).toContainText("developer@sprinkler-app.dev");
+
+    // Take screenshot of authenticated dashboard
+    await page.screenshot({ path: "dev-authenticated-dashboard.png" });
+
+    // Test sign out
+    const signOutBtn = page.locator(".sign-out-btn");
+    await signOutBtn.click();
+
+    // Should redirect back to login
+    await expect(page).toHaveURL(/.*\/login/);
+  });
 });

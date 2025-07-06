@@ -1,9 +1,14 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
 const authStore = useAuthStore();
+
+// Check if current user is the development user
+const isDevelopmentUser = computed(
+  () => import.meta.env.DEV && authStore.userEmail === "developer@sprinkler-app.dev"
+);
 
 onMounted(async () => {
   // Initialize authentication
@@ -52,7 +57,10 @@ const handleSignOut = async () => {
                 class="user-avatar"
               />
               <div class="user-details">
-                <span class="user-name">{{ authStore.userName }}</span>
+                <span class="user-name">
+                  {{ authStore.userName }}
+                  <span v-if="isDevelopmentUser" class="dev-badge">DEV</span>
+                </span>
                 <span class="user-email">{{ authStore.userEmail }}</span>
               </div>
             </div>
@@ -194,6 +202,19 @@ const handleSignOut = async () => {
 .user-email {
   font-size: 0.75rem;
   color: #718096;
+}
+
+.dev-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.125rem 0.375rem;
+  background: #f56565;
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .sign-out-btn {

@@ -47,10 +47,69 @@ export const useAuthStore = defineStore("auth", () => {
     }
   };
 
+  // Development-only authentication bypass
+  const signInWithDev = async () => {
+    if (!import.meta.env.DEV) {
+      throw new Error("Development authentication is only available in development mode");
+    }
+
+    try {
+      loading.value = true;
+      error.value = null;
+
+      // Create a mock user session that matches the OAuth structure
+      const mockUser = {
+        id: "dev-user-123",
+        email: "developer@sprinkler-app.dev",
+        user_metadata: {
+          full_name: "Development User",
+          avatar_url:
+            "https://ui-avatars.com/api/?name=Dev+User&background=4299e1&color=fff&size=128",
+          email: "developer@sprinkler-app.dev",
+        },
+        app_metadata: {},
+        aud: "authenticated",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const mockSession = {
+        access_token: "dev-access-token",
+        refresh_token: "dev-refresh-token",
+        expires_in: 3600,
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+        token_type: "bearer",
+        user: mockUser,
+      };
+
+      // Set the mock session in our store
+      session.value = mockSession as Session;
+      user.value = mockUser as User;
+
+      console.log("🔧 Development authentication successful:", mockUser.email);
+
+      return { user: mockUser, session: mockSession };
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : "Development authentication failed";
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const signOut = async () => {
     try {
       loading.value = true;
       error.value = null;
+
+      // Check if this is a development session
+      if (import.meta.env.DEV && session.value?.access_token === "dev-access-token") {
+        console.log("🔧 Development session sign out");
+        // For dev sessions, just clear the local state
+        user.value = null;
+        session.value = null;
+        return;
+      }
 
       const { error: signOutError } = await supabase.auth.signOut();
 
@@ -125,6 +184,7 @@ export const useAuthStore = defineStore("auth", () => {
 
     // Actions
     signInWithGoogle,
+    signInWithDev,
     signOut,
     initialize,
     clearError,

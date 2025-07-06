@@ -34,6 +34,19 @@
           {{ authStore.error }}
           <button @click="authStore.clearError" class="clear-error">✕</button>
         </div>
+
+        <!-- Development-only authentication bypass -->
+        <div v-if="isDevelopment" class="dev-auth-section">
+          <div class="dev-divider">
+            <span>Development Only</span>
+          </div>
+          <button @click="handleDevSignIn" :disabled="authStore.loading" class="dev-signin-btn">
+            <span class="dev-icon">🔧</span>
+            <span v-if="!authStore.loading">Quick Dev Login</span>
+            <span v-else>Signing in...</span>
+          </button>
+          <p class="dev-warning">This button is automatically disabled in production</p>
+        </div>
       </div>
 
       <div class="login-footer">
@@ -44,15 +57,29 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useAuthStore } from "@/stores/auth";
 
 const authStore = useAuthStore();
+
+// Check if we're in development mode
+const isDevelopment = computed(() => import.meta.env.DEV);
 
 const handleGoogleSignIn = async () => {
   try {
     await authStore.signInWithGoogle();
   } catch (error) {
     console.error("Sign in failed:", error);
+  }
+};
+
+const handleDevSignIn = async () => {
+  try {
+    await authStore.signInWithDev();
+    // Force navigation to home page after successful dev auth
+    window.location.href = "/";
+  } catch (error) {
+    console.error("Dev sign in failed:", error);
   }
 };
 </script>
@@ -159,6 +186,68 @@ const handleGoogleSignIn = async () => {
 
 .login-footer p {
   margin: 0;
+}
+
+/* Development authentication styles */
+.dev-auth-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.dev-divider {
+  text-align: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.dev-divider span {
+  background: white;
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #f56565;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dev-signin-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  background: #fff5f5;
+  border: 2px solid #feb2b2;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #c53030;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dev-signin-btn:hover:not(:disabled) {
+  background: #fed7d7;
+  border-color: #f56565;
+}
+
+.dev-signin-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.dev-icon {
+  font-size: 1.25rem;
+}
+
+.dev-warning {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #a0aec0;
+  text-align: center;
+  font-style: italic;
 }
 
 /* Mobile responsive */
