@@ -5,10 +5,10 @@
 ```bash
 # 1. Go to vercel.com and sign up with GitHub
 # 2. Import project: Stratose/sprinkler-business-app
-# 3. Use these settings:
-#    - Framework: Vite
-#    - Build Command: npm run vercel-build
-#    - Output Directory: dist
+# 3. Vercel auto-detects everything (no manual config needed):
+#    - Framework: Vite (auto-detected)
+#    - Build Command: npm run vercel-build (from package.json)
+#    - Output Directory: dist (auto-detected)
 ```
 
 ## 2. Environment Variables (Vercel Dashboard)
