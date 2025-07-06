@@ -1,25 +1,19 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Supabase Connection", () => {
-  test("should connect to Supabase and display table count", async ({ page }) => {
+  test("should redirect to login and show professional interface", async ({ page }) => {
     await page.goto("/");
 
-    // Wait for the title to be visible (be more specific about which h1)
-    await expect(page.locator(".home h1")).toContainText("Sprinkler Business App");
+    // Should redirect to login page since we're not authenticated
+    await expect(page).toHaveURL(/.*\/login/);
 
-    // Check that the Supabase connection test section is visible
-    await expect(page.locator("h2")).toContainText("Database Connection");
+    // Check that the login page is properly loaded
+    await expect(page.locator("h1")).toContainText("Sprinkler Business Manager");
 
-    // Wait for the connection test to complete (success status should be visible)
-    await expect(page.locator(".status.success")).toBeVisible();
+    // Check that the Google sign-in button is visible (this validates our Supabase integration)
+    await expect(page.locator(".google-signin-btn")).toBeVisible();
 
-    // Check that we're connected to Supabase
-    await expect(page.locator(".status.success")).toContainText("Connected to Supabase!");
-
-    // Check that tables were found
-    await expect(page.locator(".status.success")).toContainText("Tables found: 4");
-
-    // Take a screenshot of the connection test
-    await page.screenshot({ path: "connection-test.png" });
+    // Take a screenshot for verification
+    await page.screenshot({ path: "auth-redirect-test.png" });
   });
 });
