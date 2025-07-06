@@ -1,0 +1,10 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.json",
+  "include": ["tests/**/*"],
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "types": ["@playwright/test"],
+    "lib": ["ES2015", "DOM"],
+    "target": "ES2015"
+  }
+} 
