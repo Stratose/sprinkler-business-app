@@ -12,7 +12,8 @@
     "lint": "eslint . --fix",
     "test:e2e": "playwright test",
     "test:headed": "playwright test --headed",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "vercel-build": "npm run build"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.1",
