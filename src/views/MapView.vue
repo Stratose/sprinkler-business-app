@@ -139,6 +139,14 @@
       </div>
     </div>
 
+    <!-- Debug Info (development only) -->
+    <MapDebugInfo
+      v-if="isDevelopment"
+      :map-container="mapContainer"
+      :loading="loading"
+      :error="error"
+    />
+
     <!-- Customer Info Panel (when marker is selected) -->
     <transition name="slide-up">
       <div v-if="selectedCustomer" class="customer-info-panel">
@@ -226,6 +234,7 @@
 import { ref, onMounted, computed, nextTick } from "vue";
 import { useCustomersStore } from "@/stores/customers";
 import type { Customer } from "@/lib/supabase";
+import MapDebugInfo from "@/components/MapDebugInfo.vue";
 
 declare global {
   interface Window {
@@ -247,6 +256,7 @@ const markers = ref<any[]>([]);
 
 // Configuration
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+const isDevelopment = import.meta.env.DEV;
 
 // Computed properties
 const customers = computed(() => customersStore.customers);
