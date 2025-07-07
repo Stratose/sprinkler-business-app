@@ -23,10 +23,30 @@ export const useAuthStore = defineStore("auth", () => {
       loading.value = true;
       error.value = null;
 
+      // Determine the correct redirect URL based on environment
+      let redirectTo: string;
+
+      if (import.meta.env.DEV) {
+        // Development - use localhost
+        redirectTo = `${window.location.origin}/auth/callback`;
+      } else {
+        // Production - ensure we use the production domain
+        const currentOrigin = window.location.origin;
+
+        // If we're somehow on localhost in production, force the production URL
+        if (currentOrigin.includes("localhost") || currentOrigin.includes("127.0.0.1")) {
+          redirectTo = "https://sprinkler-business-app.vercel.app/auth/callback";
+        } else {
+          redirectTo = `${currentOrigin}/auth/callback`;
+        }
+      }
+
+      console.log("🔧 OAuth redirect URL:", redirectTo);
+
       const { data, error: authError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo,
           queryParams: {
             access_type: "offline",
             prompt: "consent",

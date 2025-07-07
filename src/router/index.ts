@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import AuthLogin from "../components/AuthLogin.vue";
 import AuthCallback from "../views/AuthCallback.vue";
+import AuthDiagnostic from "../views/AuthDiagnostic.vue";
 import CustomersView from "../views/CustomersView.vue";
 import CustomerDetailView from "../views/CustomerDetailView.vue";
 import AddCustomerView from "../views/AddCustomerView.vue";
@@ -27,6 +28,12 @@ const router = createRouter({
       path: "/auth/callback",
       name: "auth-callback",
       component: AuthCallback,
+      meta: { requiresAuth: false },
+    },
+    {
+      path: "/auth/diagnostic",
+      name: "auth-diagnostic",
+      component: AuthDiagnostic,
       meta: { requiresAuth: false },
     },
     {
@@ -66,8 +73,8 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const authStore = useAuthStore();
 
-  // Skip auth check for OAuth callback route to avoid interference
-  if (to.name === "auth-callback") {
+  // Skip auth check for OAuth callback and diagnostic routes to avoid interference
+  if (to.name === "auth-callback" || to.name === "auth-diagnostic") {
     return true;
   }
 

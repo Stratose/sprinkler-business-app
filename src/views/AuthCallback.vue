@@ -48,6 +48,9 @@ const processing = ref(true);
 onMounted(async () => {
   try {
     console.log("🔧 OAuth callback processing started");
+    console.log("🔧 Current URL:", window.location.href);
+    console.log("🔧 Current origin:", window.location.origin);
+    console.log("🔧 Environment:", import.meta.env.MODE);
 
     // Check URL parameters for OAuth errors
     const urlParams = new URLSearchParams(window.location.search);
