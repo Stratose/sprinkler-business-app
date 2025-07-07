@@ -390,7 +390,7 @@ const importCustomers = async () => {
       address: row.data.address.trim(),
       latitude: row.data.latitude ? Number(row.data.latitude) || undefined : undefined,
       longitude: row.data.longitude ? Number(row.data.longitude) || undefined : undefined,
-      user_id: authStore.user.id,
+      user_id: authStore.user?.id || "",
     }));
 
     // Import customers
