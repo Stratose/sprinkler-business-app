@@ -61,10 +61,10 @@
             <span>Schedule Appointment</span>
           </button>
 
-          <button class="action-btn" disabled>
+          <router-link to="/map" class="action-btn">
             <span class="action-icon">🗺️</span>
             <span>View Map</span>
-          </button>
+          </router-link>
         </div>
       </div>
 
@@ -104,12 +104,12 @@
             <span class="progress-icon">✅</span>
             <span>Google OAuth integration</span>
           </div>
-          <div class="progress-item in-progress">
-            <span class="progress-icon">🔄</span>
+          <div class="progress-item completed">
+            <span class="progress-icon">✅</span>
             <span>Customer management interface</span>
           </div>
-          <div class="progress-item pending">
-            <span class="progress-icon">⏳</span>
+          <div class="progress-item completed">
+            <span class="progress-icon">✅</span>
             <span>Google Maps integration</span>
           </div>
           <div class="progress-item pending">

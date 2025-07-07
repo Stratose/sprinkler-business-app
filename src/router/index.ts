@@ -7,6 +7,7 @@ import CustomersView from "../views/CustomersView.vue";
 import CustomerDetailView from "../views/CustomerDetailView.vue";
 import AddCustomerView from "../views/AddCustomerView.vue";
 import EditCustomerView from "../views/EditCustomerView.vue";
+import MapView from "../views/MapView.vue";
 import { useAuthStore } from "@/stores/auth";
 
 const router = createRouter({
@@ -64,6 +65,12 @@ const router = createRouter({
       path: "/customers/:id/edit",
       name: "customer-edit",
       component: EditCustomerView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/map",
+      name: "map",
+      component: MapView,
       meta: { requiresAuth: true },
     },
   ],

@@ -48,6 +48,7 @@ const handleSignOut = async () => {
           <nav class="main-nav">
             <RouterLink to="/" class="nav-link">Dashboard</RouterLink>
             <RouterLink to="/customers" class="nav-link">Customers</RouterLink>
+            <RouterLink to="/map" class="nav-link">Map</RouterLink>
             <RouterLink to="/about" class="nav-link">About</RouterLink>
           </nav>
 
