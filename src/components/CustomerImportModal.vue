@@ -44,7 +44,7 @@
                 d="M17 20h5v-2a3 3 0 00-5.196-2.121M9 6a3 3 0 106 0 3 3 0 00-6 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            Device Contacts
+            Web Contacts
           </button>
         </div>
 
@@ -57,7 +57,7 @@
 
           <!-- Device Contacts Tab -->
           <div v-if="activeTab === 'contacts'" class="tab-pane">
-            <DeviceContactsImport @close="$emit('close')" @success="handleImportSuccess" />
+            <WebContactsImport @close="$emit('close')" @success="handleImportSuccess" />
           </div>
         </div>
       </div>
@@ -67,9 +67,8 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { Capacitor } from "@capacitor/core";
 import CsvImport from "./CsvImport.vue";
-import DeviceContactsImport from "./DeviceContactsImport.vue";
+import WebContactsImport from "./WebContactsImport.vue";
 
 interface Emits {
   (e: "close"): void;
@@ -81,14 +80,8 @@ const emit = defineEmits<Emits>();
 // State
 const activeTab = ref<"csv" | "contacts">("csv");
 
-// Check if device contacts are supported
-const isDeviceSupported =
-  Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android";
-
-// If device contacts aren't supported, default to CSV
-if (!isDeviceSupported) {
-  activeTab.value = "csv";
-}
+// Web contacts are available on all platforms
+// The WebContactsImport component will handle browser compatibility internally
 
 // Handle import success from child components
 const handleImportSuccess = (count: number) => {
