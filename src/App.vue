@@ -2,6 +2,7 @@
 import { onMounted, computed } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import LoadingState from "@/components/LoadingState.vue";
 
 const authStore = useAuthStore();
 
@@ -27,12 +28,13 @@ const handleSignOut = async () => {
 <template>
   <div id="app">
     <!-- Show loading state during auth initialization -->
-    <div v-if="authStore.loading" class="loading-screen">
-      <div class="loading-spinner">
-        <div class="spinner-ring"></div>
-      </div>
-      <p>Loading...</p>
-    </div>
+    <LoadingState
+      v-if="authStore.loading"
+      :full-screen="true"
+      title="Checking your session"
+      message="Please wait while we verify your authentication..."
+      size="medium"
+    />
 
     <!-- Main app content when not loading -->
     <div v-else>
@@ -45,6 +47,7 @@ const handleSignOut = async () => {
 
           <nav class="main-nav">
             <RouterLink to="/" class="nav-link">Dashboard</RouterLink>
+            <RouterLink to="/customers" class="nav-link">Customers</RouterLink>
             <RouterLink to="/about" class="nav-link">About</RouterLink>
           </nav>
 
@@ -84,29 +87,7 @@ const handleSignOut = async () => {
   flex-direction: column;
 }
 
-/* Loading screen */
-.loading-screen {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.loading-spinner {
-  margin-bottom: 1rem;
-}
-
-.spinner-ring {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
+/* Loading screen styles removed - now using LoadingState component */
 
 @keyframes spin {
   0% {

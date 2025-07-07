@@ -8,7 +8,10 @@
 
       <div class="login-form">
         <button @click="handleGoogleSignIn" :disabled="authStore.loading" class="google-signin-btn">
-          <svg class="google-icon" viewBox="0 0 24 24">
+          <div v-if="authStore.loading" class="button-spinner">
+            <div class="spinner-ring"></div>
+          </div>
+          <svg v-else class="google-icon" viewBox="0 0 24 24">
             <path
               fill="#4285F4"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -27,7 +30,7 @@
             />
           </svg>
           <span v-if="!authStore.loading">Continue with Google</span>
-          <span v-else>Signing in...</span>
+          <span v-else>Redirecting to Google...</span>
         </button>
 
         <div v-if="authStore.error" class="error-message">
@@ -41,7 +44,10 @@
             <span>Development Only</span>
           </div>
           <button @click="handleDevSignIn" :disabled="authStore.loading" class="dev-signin-btn">
-            <span class="dev-icon">🔧</span>
+            <div v-if="authStore.loading" class="button-spinner">
+              <div class="spinner-ring"></div>
+            </div>
+            <span v-else class="dev-icon">🔧</span>
             <span v-if="!authStore.loading">Quick Dev Login</span>
             <span v-else>Signing in...</span>
           </button>
@@ -58,8 +64,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 
+const router = useRouter();
 const authStore = useAuthStore();
 
 // Check if we're in development mode
@@ -76,8 +84,8 @@ const handleGoogleSignIn = async () => {
 const handleDevSignIn = async () => {
   try {
     await authStore.signInWithDev();
-    // Force navigation to home page after successful dev auth
-    window.location.href = "/";
+    // Navigate to home page after successful dev auth
+    router.push("/");
   } catch (error) {
     console.error("Dev sign in failed:", error);
   }
@@ -155,6 +163,30 @@ const handleDevSignIn = async () => {
 .google-icon {
   width: 20px;
   height: 20px;
+}
+
+.button-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-spinner .spinner-ring {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #e2e8f0;
+  border-top: 2px solid #4285f4;
+  border-radius: 50%;
+  animation: button-spin 1s linear infinite;
+}
+
+@keyframes button-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-message {

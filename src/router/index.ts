@@ -2,6 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import AuthLogin from "../components/AuthLogin.vue";
 import AuthCallback from "../views/AuthCallback.vue";
+import CustomersView from "../views/CustomersView.vue";
+import CustomerDetailView from "../views/CustomerDetailView.vue";
+import AddCustomerView from "../views/AddCustomerView.vue";
+import EditCustomerView from "../views/EditCustomerView.vue";
 import { useAuthStore } from "@/stores/auth";
 
 const router = createRouter({
@@ -31,6 +35,30 @@ const router = createRouter({
       component: () => import("../views/AboutView.vue"),
       meta: { requiresAuth: true },
     },
+    {
+      path: "/customers",
+      name: "customers",
+      component: CustomersView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/customers/add",
+      name: "customers-add",
+      component: AddCustomerView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/customers/:id",
+      name: "customer-detail",
+      component: CustomerDetailView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/customers/:id/edit",
+      name: "customer-edit",
+      component: EditCustomerView,
+      meta: { requiresAuth: true },
+    },
   ],
 });
 
@@ -38,16 +66,17 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const authStore = useAuthStore();
 
-  // Wait for auth initialization if still loading
-  if (authStore.loading) {
-    await new Promise((resolve) => {
-      const unwatch = authStore.$subscribe(() => {
-        if (!authStore.loading) {
-          unwatch();
-          resolve(true);
-        }
-      });
-    });
+  // Skip auth check for OAuth callback route to avoid interference
+  if (to.name === "auth-callback") {
+    return true;
+  }
+
+  // Wait for auth initialization to complete
+  try {
+    await authStore.waitForInitialization();
+  } catch (error) {
+    console.error("Auth initialization failed in route guard:", error);
+    // Continue with current auth state if timeout
   }
 
   const requiresAuth = to.meta.requiresAuth;

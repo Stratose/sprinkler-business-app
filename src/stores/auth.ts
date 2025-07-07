@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { supabase } from "@/lib/supabase";
 import type { User, Session } from "@supabase/supabase-js";
 
@@ -9,6 +9,7 @@ export const useAuthStore = defineStore("auth", () => {
   const session = ref<Session | null>(null);
   const loading = ref(true);
   const error = ref<string | null>(null);
+  const initialized = ref(false);
 
   // Getters
   const isAuthenticated = computed(() => !!user.value);
@@ -131,35 +132,64 @@ export const useAuthStore = defineStore("auth", () => {
   const initialize = async () => {
     try {
       loading.value = true;
+      error.value = null;
+
+      console.log("🔧 Initializing authentication...");
 
       // Get initial session
       const {
         data: { session: initialSession },
+        error: sessionError,
       } = await supabase.auth.getSession();
+
+      if (sessionError) {
+        throw sessionError;
+      }
 
       if (initialSession) {
         session.value = initialSession;
         user.value = initialSession.user;
+        console.log("🔧 Found existing session:", initialSession.user?.email);
+      } else {
+        console.log("🔧 No existing session found");
       }
 
       // Listen for auth changes
       supabase.auth.onAuthStateChange(async (event, newSession) => {
-        console.log("Auth state changed:", event, newSession?.user?.email);
+        console.log("🔧 Auth state changed:", event, newSession?.user?.email);
 
-        session.value = newSession;
-        user.value = newSession?.user || null;
-
-        if (event === "SIGNED_IN") {
-          console.log("User signed in:", newSession?.user?.email);
+        // Set loading state during auth state transitions
+        if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+          loading.value = true;
         }
 
-        if (event === "SIGNED_OUT") {
-          console.log("User signed out");
+        try {
+          session.value = newSession;
+          user.value = newSession?.user || null;
+
+          if (event === "SIGNED_IN") {
+            console.log("✅ User signed in:", newSession?.user?.email);
+          }
+
+          if (event === "SIGNED_OUT") {
+            console.log("✅ User signed out");
+          }
+
+          // Clear any previous errors on successful auth state changes
+          error.value = null;
+        } catch (err) {
+          console.error("Auth state change error:", err);
+          error.value = err instanceof Error ? err.message : "Authentication state error";
+        } finally {
+          loading.value = false;
         }
       });
+
+      initialized.value = true;
+      console.log("✅ Authentication initialized successfully");
     } catch (err) {
       error.value = err instanceof Error ? err.message : "Initialization failed";
-      console.error("Auth initialization error:", err);
+      console.error("❌ Auth initialization error:", err);
     } finally {
       loading.value = false;
     }
@@ -169,12 +199,34 @@ export const useAuthStore = defineStore("auth", () => {
     error.value = null;
   };
 
+  // Helper method to wait for auth initialization
+  const waitForInitialization = async (timeout = 10000) => {
+    if (initialized.value) {
+      return;
+    }
+
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        reject(new Error("Auth initialization timeout"));
+      }, timeout);
+
+      const unwatch = watch(initialized, (newValue) => {
+        if (newValue) {
+          clearTimeout(timeoutId);
+          unwatch();
+          resolve(true);
+        }
+      });
+    });
+  };
+
   return {
     // State
     user,
     session,
     loading,
     error,
+    initialized,
 
     // Getters
     isAuthenticated,
@@ -188,5 +240,6 @@ export const useAuthStore = defineStore("auth", () => {
     signOut,
     initialize,
     clearError,
+    waitForInitialization,
   };
 });

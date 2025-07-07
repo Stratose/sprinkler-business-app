@@ -1,42 +1,111 @@
 <template>
   <div class="auth-callback">
-    <div class="callback-container">
+    <!-- Loading state -->
+    <LoadingState
+      v-if="processing && !error"
+      :full-screen="true"
+      title="Completing sign in..."
+      message="Please wait while we verify your authentication."
+      size="medium"
+    />
+
+    <!-- Error state -->
+    <div v-else-if="error" class="callback-container">
       <div class="callback-content">
-        <div class="spinner">
-          <div class="spinner-ring"></div>
+        <div class="error-icon">
+          <svg
+            width="50"
+            height="50"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
         </div>
-        <h2>Completing sign in...</h2>
-        <p>Please wait while we verify your authentication.</p>
+        <h2>Authentication Error</h2>
+        <p>{{ error }}</p>
+        <p class="redirect-message">Redirecting to login page...</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import LoadingState from "@/components/LoadingState.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
+const error = ref<string | null>(null);
+const processing = ref(true);
 
 onMounted(async () => {
   try {
-    // The auth state change will be handled by the store
-    // Just wait a moment for the callback to be processed
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    console.log("🔧 OAuth callback processing started");
 
-    // Check if we're authenticated
+    // Check URL parameters for OAuth errors
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorParam = urlParams.get("error");
+    const errorDescription = urlParams.get("error_description");
+
+    if (errorParam) {
+      // Handle specific OAuth errors
+      const errorMessages = {
+        access_denied: "Authentication was canceled. Please try again.",
+        invalid_request: "Invalid authentication request. Please try again.",
+        server_error: "Google authentication service is temporarily unavailable.",
+        temporarily_unavailable: "Google authentication service is temporarily unavailable.",
+      };
+
+      error.value =
+        errorMessages[errorParam as keyof typeof errorMessages] ||
+        errorDescription ||
+        "Authentication was canceled or failed";
+      processing.value = false;
+
+      console.log("❌ OAuth error detected:", errorParam, errorDescription);
+
+      // Redirect to login after showing error briefly
+      setTimeout(() => {
+        router.push("/login");
+      }, 3000);
+      return;
+    }
+
+    // Wait for auth initialization to complete
+    console.log("⏳ Waiting for auth initialization...");
+    await authStore.waitForInitialization();
+
+    // Check authentication status after initialization
     if (authStore.isAuthenticated) {
-      // Redirect to home page
+      console.log("✅ Authentication successful, redirecting to dashboard");
       router.push("/");
     } else {
-      // If not authenticated, redirect to login
+      console.log("❌ Authentication failed, redirecting to login");
       router.push("/login");
     }
-  } catch (error) {
-    console.error("Auth callback error:", error);
-    router.push("/login");
+  } catch (err) {
+    console.error("❌ Auth callback error:", err);
+
+    // Determine error type for better user feedback
+    if (err instanceof Error && err.message.includes("timeout")) {
+      error.value = "Authentication is taking longer than expected. Please try again.";
+    } else {
+      error.value = "An error occurred during authentication. Please try again.";
+    }
+
+    processing.value = false;
+
+    // Redirect to login after showing error
+    setTimeout(() => {
+      router.push("/login");
+    }, 3000);
   }
 });
 </script>
@@ -68,28 +137,13 @@ onMounted(async () => {
   gap: 1.5rem;
 }
 
-.spinner {
+/* Spinner styles removed - now using LoadingState component */
+
+.error-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.spinner-ring {
-  width: 50px;
-  height: 50px;
-  border: 4px solid #e2e8f0;
-  border-top: 4px solid #4285f4;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  color: #e53e3e;
 }
 
 .callback-content h2 {
@@ -103,6 +157,12 @@ onMounted(async () => {
   color: #718096;
   font-size: 1rem;
   margin: 0;
+}
+
+.redirect-message {
+  color: #a0aec0;
+  font-size: 0.875rem;
+  font-style: italic;
 }
 
 /* Mobile responsive */

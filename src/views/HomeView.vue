@@ -46,24 +46,24 @@
       <div class="actions-section">
         <h2>Quick Actions</h2>
         <div class="actions-grid">
-          <button class="action-btn primary">
+          <router-link to="/customers/add" class="action-btn primary">
             <span class="action-icon">➕</span>
             <span>Add Customer</span>
-          </button>
+          </router-link>
 
-          <button class="action-btn">
+          <router-link to="/customers" class="action-btn">
+            <span class="action-icon">👥</span>
+            <span>View Customers</span>
+          </router-link>
+
+          <button class="action-btn" disabled>
             <span class="action-icon">📅</span>
             <span>Schedule Appointment</span>
           </button>
 
-          <button class="action-btn">
+          <button class="action-btn" disabled>
             <span class="action-icon">🗺️</span>
             <span>View Map</span>
-          </button>
-
-          <button class="action-btn">
-            <span class="action-icon">📝</span>
-            <span>Add Note</span>
           </button>
         </div>
       </div>

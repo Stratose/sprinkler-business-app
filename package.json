@@ -16,6 +16,7 @@
     "vercel-build": "npm run build"
   },
   "dependencies": {
+    "@capacitor-community/contacts": "^7.0.0",
     "@capacitor/android": "^7.4.1",
     "@capacitor/cli": "^7.4.1",
     "@capacitor/core": "^7.4.1",
