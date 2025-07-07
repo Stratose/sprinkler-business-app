@@ -118,6 +118,15 @@
 
       <!-- Map -->
       <div v-else class="map-wrapper">
+        <!-- Loading overlay -->
+        <div v-if="loading" class="map-loading-overlay">
+          <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading customer locations...</p>
+          </div>
+        </div>
+
+        <!-- Map container - always present when API key is available -->
         <div ref="mapContainer" class="google-map"></div>
 
         <!-- Map Stats -->
@@ -239,7 +248,7 @@ const customersStore = useCustomersStore();
 const mapContainer = ref<HTMLElement>();
 const googleMap = ref<any>(null);
 const mapLoaded = ref(false);
-const loading = ref(true);
+const loading = ref(false);
 const error = ref<string | null>(null);
 const selectedCustomer = ref<Customer | null>(null);
 const markers = ref<any[]>([]);
@@ -295,7 +304,12 @@ const initializeMap = async () => {
 
   try {
     await loadGoogleMapsScript();
+
+    // Wait for next tick and ensure DOM is ready
     await nextTick();
+
+    // Wait a bit longer for DOM to be fully rendered
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     if (!mapContainer.value) {
       throw new Error("Map container not found");
@@ -447,8 +461,13 @@ onMounted(async () => {
     await customersStore.fetchCustomers();
   }
 
-  // Initialize map
-  await initializeMap();
+  // Wait for DOM to be ready before initializing map
+  await nextTick();
+
+  // Initialize map after a brief delay to ensure DOM is fully rendered
+  setTimeout(() => {
+    initializeMap();
+  }, 100);
 });
 </script>
 
@@ -671,6 +690,19 @@ onMounted(async () => {
 .map-wrapper {
   position: relative;
   height: 100%;
+}
+
+.map-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
 .google-map {
