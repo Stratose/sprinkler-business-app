@@ -335,48 +335,66 @@ const addCustomerMarkers = async () => {
   const bounds = new window.google.maps.LatLngBounds();
   let hasValidCoordinates = false;
 
-  customers.value.forEach((customer) => {
-    if (customer.latitude != null && customer.longitude != null) {
-      const position = {
-        lat: Number(customer.latitude),
-        lng: Number(customer.longitude),
-      };
+  // Performance optimization: For large datasets, use smaller markers and batch processing
+  const isLargeDataset = customers.value.length > 50;
+  const batchSize = isLargeDataset ? 20 : customers.value.length;
 
-      const marker = new window.google.maps.Marker({
-        position,
-        map: googleMap.value,
-        title: `${customer.first_name} ${customer.last_name}`,
-        icon: {
-          path: window.google.maps.SymbolPath.CIRCLE,
-          scale: 8,
-          fillColor: "#3b82f6",
-          fillOpacity: 1,
-          strokeColor: "#ffffff",
-          strokeWeight: 2,
-        },
-      });
+  const addMarkersBatch = (startIndex: number) => {
+    const endIndex = Math.min(startIndex + batchSize, customers.value.length);
 
-      // Add click listener
-      marker.addListener("click", () => {
-        selectedCustomer.value = customer;
-        googleMap.value.panTo(position);
-      });
+    for (let i = startIndex; i < endIndex; i++) {
+      const customer = customers.value[i];
+      if (customer.latitude != null && customer.longitude != null) {
+        const position = {
+          lat: Number(customer.latitude),
+          lng: Number(customer.longitude),
+        };
 
-      markers.value.push(marker);
-      bounds.extend(position);
-      hasValidCoordinates = true;
+        const marker = new window.google.maps.Marker({
+          position,
+          map: googleMap.value,
+          title: `${customer.first_name} ${customer.last_name}`,
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: isLargeDataset ? 6 : 8, // Smaller markers for large datasets
+            fillColor: "#3b82f6",
+            fillOpacity: 1,
+            strokeColor: "#ffffff",
+            strokeWeight: 2,
+          },
+        });
+
+        // Add click listener
+        marker.addListener("click", () => {
+          selectedCustomer.value = customer;
+          googleMap.value.panTo(position);
+        });
+
+        markers.value.push(marker);
+        bounds.extend(position);
+        hasValidCoordinates = true;
+      }
     }
-  });
 
-  // Fit map to show all markers
-  if (hasValidCoordinates) {
-    if (markers.value.length === 1) {
-      googleMap.value.setCenter(bounds.getCenter());
-      googleMap.value.setZoom(15);
+    // Process next batch if there are more markers
+    if (endIndex < customers.value.length) {
+      // Use setTimeout to prevent blocking the UI
+      setTimeout(() => addMarkersBatch(endIndex), 10);
     } else {
-      googleMap.value.fitBounds(bounds);
+      // Fit map to show all markers after all batches are processed
+      if (hasValidCoordinates) {
+        if (markers.value.length === 1) {
+          googleMap.value.setCenter(bounds.getCenter());
+          googleMap.value.setZoom(15);
+        } else {
+          googleMap.value.fitBounds(bounds);
+        }
+      }
     }
-  }
+  };
+
+  // Start batch processing
+  addMarkersBatch(0);
 };
 
 const centerMap = () => {
